@@ -53,7 +53,8 @@
         }
 
         /* Styling inputs and buttons */
-        input[type="number"] {
+        input[type="number"],
+        input[type="text"] {
             width: 80%;
             padding: 10px;
             border: 2px solid #ddd;
@@ -63,7 +64,7 @@
             outline: none;
         }
 
-        input[type="number"]:focus {
+        input:focus {
             border-color: #007bff;
         }
 
@@ -97,6 +98,15 @@
             font-size: 0.8em;
             color: #777;
         }
+
+        /* Pre-Approved and Not Approved Styling */
+        .approved {
+            color: green;
+        }
+
+        .not-approved {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -107,24 +117,37 @@
         </header>
 
         <div id="form-card" class="card">
+            <!-- Page 1: Ask for the Name -->
             <div id="page1">
-                <h2>Question 1: What is your age?</h2>
-                <input type="number" id="age" placeholder="Enter your age">
+                <h2>What is your name?</h2>
+                <input type="text" id="name" placeholder="Enter your name">
                 <button class="btn" onclick="nextPage(1)">Next</button>
             </div>
 
+            <!-- Page 2: Ask for Age -->
             <div id="page2" style="display:none;">
-                <h2>Question 2: What is your income level?</h2>
-                <input type="number" id="income" placeholder="Enter your income">
+                <h2>Question 1: What is your age?</h2>
+                <input type="number" id="age" placeholder="Enter your age">
                 <button class="btn" onclick="nextPage(2)">Next</button>
             </div>
 
-            <div id="preapproved" style="display:none;">
-                <h2>Congratulations, You are Pre-Approved!</h2>
+            <!-- Page 3: Ask for Income -->
+            <div id="page3" style="display:none;">
+                <h2>Question 2: What is your income level?</h2>
+                <input type="number" id="income" placeholder="Enter your income">
+                <button class="btn" onclick="nextPage(3)">Next</button>
             </div>
 
+            <!-- Pre-Approved Page -->
+            <div id="preapproved" style="display:none;">
+                <h2 class="approved">Congratulations, <span id="approved-name"></span>! You are Pre-Approved!</h2>
+                <p>Please click the link below to sign up:</p>
+                <a href="https://signup.knovon.org" class="btn">Sign Up</a>
+            </div>
+
+            <!-- Not Approved Page -->
             <div id="notapproved" style="display:none;">
-                <h2>Sorry, You are Not Pre-Approved</h2>
+                <h2 class="not-approved">Sorry, <span id="not-approved-name"></span>, You are Not Pre-Approved</h2>
             </div>
         </div>
 
@@ -134,21 +157,34 @@
     </div>
 
     <script>
+        let userName = '';
+
         function nextPage(pageNumber) {
+            const name = document.getElementById('name').value;
             const age = document.getElementById('age').value;
             const income = document.getElementById('income').value;
 
-            // Hide the current page and show the next one
-            if (pageNumber === 1) {
+            // Store the name when moving past the first page
+            if (pageNumber === 1 && name) {
+                userName = name;
                 document.getElementById('page1').style.display = 'none';
                 document.getElementById('page2').style.display = 'block';
-            } else if (pageNumber === 2) {
+            }
+            // Moving to the next question after age
+            else if (pageNumber === 2 && age) {
                 document.getElementById('page2').style.display = 'none';
+                document.getElementById('page3').style.display = 'block';
+            }
+            // Final step: Decision based on age and income
+            else if (pageNumber === 3 && income) {
+                document.getElementById('page3').style.display = 'none';
                 
                 // Decision logic: customize conditions as per your needs
                 if (age >= 18 && income >= 50000) {
+                    document.getElementById('approved-name').textContent = userName;
                     document.getElementById('preapproved').style.display = 'block';
                 } else {
+                    document.getElementById('not-approved-name').textContent = userName;
                     document.getElementById('notapproved').style.display = 'block';
                 }
             }
